@@ -53,3 +53,26 @@ export async function isWhitelisted(pubkey: string): Promise<boolean> {
     return false;
   }
 }
+
+export async function addToWhitelist(pubkey: string, duration: 'yearly' | 'lifetime'): Promise<void> {
+  try {
+    const response = await fetch(`${NODERUNNERS_WHITELIST_API_URL}/whitelist/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': NODERUNNERS_API_KEY || ''
+      },
+      body: JSON.stringify({ pubkey, duration }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update whitelist');
+    }
+  } catch (error) {
+    console.error('Error updating whitelist:', error);
+    throw error;
+  }
+}
+
+// Ensure this function is exported
+export { addToWhitelist };
