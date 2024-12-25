@@ -6,7 +6,6 @@ import { PurchasePlans } from "@/components/dashboard/purchase-plans";
 import { StatusCard } from "@/components/dashboard/status-card";
 import { HeroSection } from "@/components/home/hero-section";
 import { FooterInfo } from "@/components/home/footer-info";
-import { initNostrLogin } from '@/lib/auth/nostr';
 import { useAuth } from '@/hooks/use-auth';
 import { useWhitelist } from '@/hooks/use-whitelist';
 import { PlanId } from '@/lib/config/plans';
@@ -20,7 +19,20 @@ export function HomePage() {
 
   useEffect(() => {
     setIsClientSide(true);
-    initNostrLogin().catch(console.error);
+    import('nostr-login')
+      .then(async ({ init }) => {
+        init({
+          theme: 'ocean',
+          darkMode: true,
+          noBanner: true, // Ensure no banner is shown automatically
+          onAuth: (npub, options) => {
+            if (options.pubkey) {
+              // Handle successful login
+            }
+          }
+        });
+      })
+      .catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -37,6 +49,10 @@ export function HomePage() {
     router.push(`/payment?plan=${planId}`);
   };
 
+  const handleLoginWithNostr = () => {
+    document.dispatchEvent(new CustomEvent('nlLaunch', { detail: 'login' }));
+  };
+
   // Prevent hydration mismatch by not rendering auth-dependent content on server
   if (!isClientSide) {
     return (
@@ -45,7 +61,7 @@ export function HomePage() {
           <div className="max-w-4xl mx-auto">
             <HeroSection 
               isAuthenticated={false}
-              onLogin={() => {}}
+              onLogin={handleLoginWithNostr}
               isLoading={false}
             />
             <FooterInfo />
@@ -61,7 +77,7 @@ export function HomePage() {
         <div className="max-w-4xl mx-auto">
           <HeroSection 
             isAuthenticated={isAuthenticated}
-            onLogin={() => setIsAuthLoading(true)}
+            onLogin={handleLoginWithNostr}
             isLoading={isAuthLoading}
           />
 
