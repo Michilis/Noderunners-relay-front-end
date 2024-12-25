@@ -73,6 +73,3 @@ export async function addToWhitelist(pubkey: string, duration: 'yearly' | 'lifet
     throw error;
   }
 }
-
-// Ensure this function is exported
-export { addToWhitelist };
