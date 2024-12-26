@@ -3,6 +3,9 @@ import { NostrJson, WhitelistCache } from './types';
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 let whitelistCache: WhitelistCache | null = null;
 
+const NODERUNNERS_WHITELIST_API_URL = process.env.NODERUNNERS_WHITELIST_API_URL;
+const NODERUNNERS_API_KEY = process.env.NODERUNNERS_API_KEY;
+
 export async function fetchWhitelist(): Promise<Set<string>> {
   // Return cached data if it's still valid
   if (whitelistCache && Date.now() - whitelistCache.lastUpdated < CACHE_TTL) {
